@@ -5,4 +5,4 @@ const generateApiKey = () => {
     .join("");
 };
 
-export default generateApiKey;
+module.exports = generateApiKey;
