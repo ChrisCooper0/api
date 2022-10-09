@@ -3,9 +3,19 @@ const app = express();
 require("dotenv").config();
 const { json } = require("body-parser");
 const helmet = require("helmet");
+const mysql = require("mysql2");
+
+// db connection
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "password",
+  database: "api",
+});
 
 // bodyParser to parse application/json
 app.use(json());
+app.use(express.json());
 
 // adding Helmet to enhance the API's security
 app.use(helmet());
@@ -24,7 +34,10 @@ app.get("/api/demo", validateKey, (_, res) => {
 app.post("/api/register", (req, res) => {
   const { email, password } = req.body;
 
+  console.log(email, password, "test");
+
   // TODO: salt/hash password before saving to db
+  const hashedPassword = password;
 
   // TODO: Create User DB (id, email, password, apiKey, apiUseage: {date, count}) and check if user exists
   const newUser = true;
@@ -45,15 +58,15 @@ app.post("/api/register", (req, res) => {
   const apiKey = generateApiKey();
 
   // TODO: Create new User in DB
-  const user = {
-    email,
-    password: hashedPassword,
-    apiKey,
-  };
+  const q = "INSERT INTO user (`email`, `password`, `apiKey`) VALUES (?)";
+  const values = [email, hashedPassword, apiKey];
 
-  res.status(200).send({
-    data: `Successfully registered ${email}`,
-    apiKey,
+  db.query(q, [values], (err, data) => {
+    if (err) return res.status(400).json(err);
+    return res.status(200).send({
+      data: `Successfully registered ${email}`,
+      apiKey,
+    });
   });
 });
 
