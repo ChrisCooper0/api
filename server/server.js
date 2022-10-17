@@ -3,9 +3,13 @@ import helmet from "helmet";
 import { createConnection } from "mysql2";
 import cors from "cors";
 import bcrypt from "bcryptjs";
+import validateKey from "./middleware/validateKey.js";
+import { createNewDBUser } from "./utils/createNewDBUser.js";
+
+const PORT = 8080;
 
 const app = express();
-const PORT = 8080;
+
 app.use(cors());
 app.use(express.json());
 
@@ -19,12 +23,6 @@ const db = createConnection({
 
 // Helmet to enhance security
 app.use(helmet());
-
-// Middleware
-import validateKey from "./middleware/validateKey.js";
-
-// Utils
-import { createNewDBUser } from "./utils/createNewDBUser.js";
 
 // Routes
 // GET
