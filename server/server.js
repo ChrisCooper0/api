@@ -1,75 +1,66 @@
-const express = require("express");
-const app = express();
-require("dotenv").config();
-const { json } = require("body-parser");
-const helmet = require("helmet");
-const mysql = require("mysql2");
+import express from "express";
+import helmet from "helmet";
+import { createConnection } from "mysql2";
+import cors from "cors";
+import bcrypt from "bcryptjs";
 
-// db connection
-const db = mysql.createConnection({
+const app = express();
+const PORT = 8080;
+app.use(cors());
+app.use(express.json());
+
+// DB connection
+const db = createConnection({
   host: "localhost",
   user: "root",
   password: "password",
   database: "api",
 });
 
-// bodyParser to parse application/json
-app.use(json());
-app.use(express.json());
-
-// adding Helmet to enhance the API's security
+// Helmet to enhance security
 app.use(helmet());
 
-// middleware
-const validateKey = require("./middleware/validateKey.js");
+// Middleware
+import validateKey from "./middleware/validateKey.js";
 
-// utils
-const generateApiKey = require("./utils/generateApiKey.js");
+// Utils
+import { createNewDBUser } from "./utils/createNewDBUser.js";
 
 // Routes
-app.get("/api/demo", validateKey, (_, res) => {
-  res.status(200).send({ data: "Hello World" });
+// GET
+app.get("/api", validateKey, (_req, res) => {
+  return res.status(200).send({ data: "Here is the data" });
 });
 
-app.post("/api/register", (req, res) => {
-  const { email, password } = req.body;
+// POST
+app.post("/api/register", async (req, res) => {
+  const { email: newEmail, password } = req.body;
 
-  console.log(email, password, "test");
-
-  // TODO: salt/hash password before saving to db
-  const hashedPassword = password;
-
-  // TODO: Create User DB (id, email, password, apiKey, apiUseage: {date, count}) and check if user exists
-  const newUser = true;
-
-  if (!email) {
-    res.status(400).send({ data: "Please provide an email address." });
+  if (!newEmail) {
+    res.status(400).send({ data: "Please provide an email address" });
     return;
   }
 
-  if (!newUser) {
-    res.status(400).send({
-      data: "User already exists with this email. Please try logging in.",
-    });
+  if (!password) {
+    res.status(400).send({ data: "Please provide a password" });
     return;
   }
 
-  // Generate new apiKey
-  const apiKey = generateApiKey();
+  const hashedPassword = await bcrypt.hash(password, 10);
 
-  // TODO: Create new User in DB
-  const q = "INSERT INTO user (`email`, `password`, `apiKey`) VALUES (?)";
-  const values = [email, hashedPassword, apiKey];
-
-  db.query(q, [values], (err, data) => {
+  // TODO: Add apiUseage: {date, count})
+  db.query("SELECT email FROM user WHERE email= ?", [newEmail], (err, row) => {
     if (err) return res.status(400).json(err);
-    return res.status(200).send({
-      data: `Successfully registered ${email}`,
-      apiKey,
-    });
+    if (row && row.length) {
+      res.status(400).send({
+        data: "A user already exists with this email",
+      });
+    } else {
+      createNewDBUser(res, db, newEmail, hashedPassword);
+    }
   });
 });
 
-app.listen(() => {
-  console.log(`🚀 Server started ${process.env.PORT}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server started on port ${PORT}`);
 });
