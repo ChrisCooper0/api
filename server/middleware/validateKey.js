@@ -19,6 +19,7 @@ const validateKey = (req, res, next) => {
       [apiKey],
       (err, row) => {
         if (err) return res.status(400).json(err);
+
         if (!row || !row.length) {
           res.status(401).send({
             data: "Invalid API Key",
