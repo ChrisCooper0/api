@@ -17,7 +17,6 @@ const Header = ({ text }: HeaderProps) => {
 const Heading = styled.h1`
   font-size: 3rem;
   /* font-family: "Monoton", cursive; */
-  /* color: #21c6e3; */
   &:hover {
     cursor: pointer;
   }
