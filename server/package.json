@@ -5,9 +5,9 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
+    "test": "jest --watchAll",
     "dev": "nodemon server.js",
-    "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -20,5 +20,9 @@
     "helmet": "^6.0.0",
     "mysql2": "^2.3.3",
     "nodemon": "^2.0.20"
+  },
+  "devDependencies": {
+    "jest": "^29.2.1",
+    "supertest": "^6.3.0"
   }
 }
