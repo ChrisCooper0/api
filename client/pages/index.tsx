@@ -1,29 +1,34 @@
 import type { NextPage } from "next";
 import styled from "styled-components";
 
+import { selectAuthState, setAuthState } from "../store/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 const Home: NextPage = () => {
+  const authState = useSelector(selectAuthState);
+  const dispatch = useDispatch();
+
   const handleSignUp = () => {
     // sign up via /api/register
   };
 
   const handleLogInOut = () => {
     // create new login/logout route (check against db) & global state
-    if (loggedIn) {
+    if (authState) {
       // log out
+      dispatch(setAuthState(false));
     }
-    if (!loggedIn) {
+    if (!authState) {
       // log in
+      dispatch(setAuthState(true));
     }
   };
-
-  // Logic for this - context/redux store?
-  const loggedIn = false;
 
   return (
     <Wrapper>
       <Button onClick={handleSignUp}>Sign Up</Button>
       <Button onClick={handleLogInOut}>
-        {loggedIn ? "Log Out" : "Log In"}
+        {authState ? "Log Out" : "Log In"}
       </Button>
     </Wrapper>
   );

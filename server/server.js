@@ -62,7 +62,7 @@ app.post("/api/resetApiKey", (req, res) => {
   );
 });
 
-// POST - register new user
+// POST: register new user
 app.post("/api/register", async (req, res) => {
   const { email: newEmail, password } = req.body;
 
