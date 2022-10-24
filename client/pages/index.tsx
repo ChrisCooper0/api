@@ -1,6 +1,6 @@
+import { useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
-
 import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -8,8 +8,30 @@ const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
   const dispatch = useDispatch();
 
-  const handleSignUp = () => {
-    // sign up via /api/register
+  const emailRef: any = useRef();
+  const passwordRef: any = useRef();
+
+  const [apiKey, setApiKey] = useState();
+  const [signUpMssg, setSignUpMssg] = useState();
+
+  const handleSignUp = async () => {
+    const res = await fetch("http://localhost:8080/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: emailRef.current.value,
+        password: passwordRef.current.value,
+      }),
+    });
+
+    const { apiKey, data } = await res.json();
+
+    setSignUpMssg(data);
+    setApiKey(apiKey);
+    emailRef.current.value = "";
+    passwordRef.current.value = "";
   };
 
   const handleLogInOut = () => {
@@ -26,6 +48,10 @@ const Home: NextPage = () => {
 
   return (
     <Wrapper>
+      <input type="email" ref={emailRef} />
+      <input type="password" ref={passwordRef} />
+      {signUpMssg && <p>{signUpMssg}</p>}
+      {apiKey && <p>Your api key is: {apiKey}</p>}
       <Button onClick={handleSignUp}>Sign Up</Button>
       <Button onClick={handleLogInOut}>
         {authState ? "Log Out" : "Log In"}
