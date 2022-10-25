@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
@@ -8,11 +8,12 @@ const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
   const dispatch = useDispatch();
 
-  const emailRef: any = useRef();
-  const passwordRef: any = useRef();
+  const emailRef: any = useRef("");
+  const passwordRef: any = useRef("");
 
   const [apiKey, setApiKey] = useState();
   const [signUpMssg, setSignUpMssg] = useState();
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const handleSignUp = async () => {
     const res = await fetch("http://localhost:8080/api/register", {
@@ -46,12 +47,23 @@ const Home: NextPage = () => {
     }
   };
 
+  const handleApiKeyCopy = () => {
+    if (apiKey) {
+      navigator.clipboard.writeText(apiKey);
+      setCopySuccess(true);
+    }
+  };
+
   return (
     <Wrapper>
       <input type="email" ref={emailRef} />
       <input type="password" ref={passwordRef} />
       {signUpMssg && <p>{signUpMssg}</p>}
-      {apiKey && <p>Your api key is: {apiKey}</p>}
+      {apiKey && (
+        <button onClick={handleApiKeyCopy}>
+          {copySuccess ? "Copied!" : "Copy"}
+        </button>
+      )}
       <Button onClick={handleSignUp}>Sign Up</Button>
       <Button onClick={handleLogInOut}>
         {authState ? "Log Out" : "Log In"}
