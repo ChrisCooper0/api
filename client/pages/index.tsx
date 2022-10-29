@@ -1,8 +1,9 @@
-import { MutableRefObject, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
@@ -14,6 +15,8 @@ const Home: NextPage = () => {
   const [apiKey, setApiKey] = useState();
   const [signUpMssg, setSignUpMssg] = useState();
   const [copySuccess, setCopySuccess] = useState(false);
+
+  const router = useRouter();
 
   const handleSignUp = async () => {
     const res = await fetch("http://localhost:8080/api/register", {
@@ -38,12 +41,13 @@ const Home: NextPage = () => {
   const handleLogInOut = () => {
     // create new login/logout route (check against db) & global state
     if (authState) {
-      // log out
+      // Logout
       dispatch(setAuthState(false));
-    }
-    if (!authState) {
-      // log in
+      router.push("/");
+    } else {
+      // Login
       dispatch(setAuthState(true));
+      router.push("/dashboard");
     }
   };
 
