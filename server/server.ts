@@ -56,7 +56,7 @@ app.post("/api/resetApiKey", (req, res) => {
       if (err) return res.status(400).json(err);
 
       if (!row) return res.status(400).send({ data: "No such apiKey exists" });
-      return res.status(200).send({ data: newApiKey });
+      return res.status(200).send({ apiKey: newApiKey });
     }
   );
 });
@@ -77,10 +77,10 @@ app.post("/api/register", async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // TODO: Add apiUseage: {date, count})
   db.query("SELECT email FROM user WHERE email= ?;", [newEmail], (err, row) => {
+    const json: any = row;
     if (err) return res.status(400).json(err);
-    if (row) {
+    if (json.length) {
       res.status(400).send({
         data: "A user already exists with this email",
       });

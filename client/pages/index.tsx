@@ -3,7 +3,6 @@ import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
@@ -15,8 +14,6 @@ const Home: NextPage = () => {
   const [apiKey, setApiKey] = useState();
   const [signUpMssg, setSignUpMssg] = useState();
   const [copySuccess, setCopySuccess] = useState(false);
-
-  const router = useRouter();
 
   const handleSignUp = async () => {
     const res = await fetch("http://localhost:8080/api/register", {
@@ -32,6 +29,7 @@ const Home: NextPage = () => {
 
     const { apiKey, data } = await res.json();
 
+    dispatch(setAuthState(true));
     setSignUpMssg(data);
     setApiKey(apiKey);
     emailRef.current.value = "";
@@ -39,15 +37,13 @@ const Home: NextPage = () => {
   };
 
   const handleLogInOut = () => {
-    // create new login/logout route (check against db) & global state
     if (authState) {
       // Logout
       dispatch(setAuthState(false));
-      router.push("/");
     } else {
       // Login
       dispatch(setAuthState(true));
-      router.push("/dashboard");
+      // Create login route
     }
   };
 
@@ -58,20 +54,47 @@ const Home: NextPage = () => {
     }
   };
 
+  const resetAPIKey = async () => {
+    const res = await fetch("http://localhost:8080/api/resetApiKey", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "test",
+      },
+      body: JSON.stringify({
+        email: emailRef.current.value,
+      }),
+    });
+
+    const { apiKey } = await res.json();
+
+    setApiKey(apiKey);
+  };
+
   return (
     <Wrapper>
-      <input type="email" ref={emailRef} />
-      <input type="password" ref={passwordRef} />
       {signUpMssg && <p>{signUpMssg}</p>}
       {apiKey && (
-        <button onClick={handleApiKeyCopy}>
-          {copySuccess ? "Copied!" : "Copy"}
-        </button>
+        <>
+          <input type="password" value={apiKey}>
+            {/* TODO: Add visibility icon set type on click */}
+          </input>
+          <button onClick={handleApiKeyCopy}>
+            {copySuccess ? "Copied!" : "Copy"}
+          </button>
+        </>
       )}
+      <form>
+        <input type="email" ref={emailRef} />
+        <input type="password" ref={passwordRef} />
+      </form>
+
       <Button onClick={handleSignUp}>Sign Up</Button>
       <Button onClick={handleLogInOut}>
         {authState ? "Log Out" : "Log In"}
       </Button>
+      <h2>{authState ? "Logged In" : "Logged out"}</h2>
+      <Button onClick={resetAPIKey}>Reset API Key</Button>
     </Wrapper>
   );
 };
