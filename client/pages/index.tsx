@@ -43,7 +43,7 @@ const Home: NextPage = () => {
     } else {
       // Login
       dispatch(setAuthState(true));
-      // Create login route
+      // TODO: Create login route
     }
   };
 
@@ -73,6 +73,7 @@ const Home: NextPage = () => {
 
   return (
     <Wrapper>
+      <h2>You are logged {authState ? "in" : "out"}</h2>
       {signUpMssg && <p>{signUpMssg}</p>}
       {apiKey && (
         <>
@@ -84,24 +85,36 @@ const Home: NextPage = () => {
           </button>
         </>
       )}
-      <form>
-        <input type="email" ref={emailRef} />
-        <input type="password" ref={passwordRef} />
-      </form>
-
+      <Form>
+        <input type="email" ref={emailRef} placeholder={"email"} />
+        <input type="password" ref={passwordRef} placeholder={"password"} />
+      </Form>
       <Button onClick={handleSignUp}>Sign Up</Button>
       <Button onClick={handleLogInOut}>
         {authState ? "Log Out" : "Log In"}
       </Button>
-      <h2>{authState ? "Logged In" : "Logged out"}</h2>
-      <Button onClick={resetAPIKey}>Reset API Key</Button>
+      {authState && <Button onClick={resetAPIKey}>Reset API Key</Button>}
     </Wrapper>
   );
 };
 
 const Wrapper = styled.div`
   display: flex;
-  gap: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const Form = styled.form`
+  display: flex;
+  gap: 0.33rem;
+
+  input {
+    padding: 0.2rem 0.5rem;
+    border-radius: 5px;
+    border: 1px solid lightgrey;
+  }
 `;
 
 const Button = styled.button`
