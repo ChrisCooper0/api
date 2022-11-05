@@ -3,6 +3,8 @@ import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { setTimeout } from "timers";
 
 const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
@@ -51,6 +53,9 @@ const Home: NextPage = () => {
     if (apiKey) {
       navigator.clipboard.writeText(apiKey);
       setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+      }, 2000);
     }
   };
 
@@ -71,20 +76,31 @@ const Home: NextPage = () => {
     setApiKey(apiKey);
   };
 
+  const [showApi, setShowApi] = useState(false);
+  const toggleVisibility = () => {
+    setShowApi(!showApi);
+  };
+
   return (
     <Wrapper>
       <h2>You are logged {authState ? "in" : "out"}</h2>
       {signUpMssg && <p>{signUpMssg}</p>}
-      {apiKey && (
+      {!apiKey && (
         <>
-          <input type="password" value={apiKey}>
-            {/* TODO: Add visibility icon set type on click */}
-          </input>
+          <StyledAPIKey>
+            <input type={showApi ? "text" : "password"} value={apiKey} />
+            {showApi ? (
+              <StyledVisible onClick={toggleVisibility} />
+            ) : (
+              <StyledInvisible onClick={toggleVisibility} />
+            )}
+          </StyledAPIKey>
           <button onClick={handleApiKeyCopy}>
             {copySuccess ? "Copied!" : "Copy"}
           </button>
         </>
       )}
+
       <Form>
         <input type="email" ref={emailRef} placeholder={"email"} />
         <input type="password" ref={passwordRef} placeholder={"password"} />
@@ -97,6 +113,30 @@ const Home: NextPage = () => {
     </Wrapper>
   );
 };
+
+const StyledAPIKey = styled.div`
+  position: relative;
+`;
+
+const StyledVisible = styled(FiEye)`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  :hover {
+    cursor: pointer;
+  }
+`;
+
+const StyledInvisible = styled(FiEyeOff)`
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  :hover {
+    cursor: pointer;
+  }
+`;
 
 const Wrapper = styled.div`
   display: flex;

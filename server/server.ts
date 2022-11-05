@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import validateKey from "./middleware/validateKey";
 import { createNewDBUser } from "./utils/createNewDBUser";
 import { generateApiKey } from "./utils/generateApiKey";
+import { db } from "./dbConnection";
 
 const PORT = 8080;
 
@@ -13,14 +14,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-// DB connection
-const db = createConnection({
-  host: "localhost",
-  user: "root",
-  password: "password",
-  database: "api",
-});
 
 // Helmet to enhance security
 app.use(helmet());

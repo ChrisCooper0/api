@@ -1,12 +1,4 @@
-import { createConnection } from "mysql2";
-
-// DB connection
-const db = createConnection({
-  host: "localhost",
-  user: "root",
-  password: "password",
-  database: "api",
-});
+import { db } from "../dbConnection";
 
 const validateKey = (req: any, res: any, next: () => void) => {
   const apiKey = req.headers["x-api-key"];
