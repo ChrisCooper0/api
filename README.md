@@ -19,6 +19,8 @@
     ├── styles
     │   # Utility functions
     ├── utils
+    │   # Redux store
+    ├── store
     │   # Static files
     └── public
 
@@ -30,5 +32,6 @@
     │   └── validateKey.ts
     │
     └── utils
+        ├── createNewDBUser.ts
         └── generateApiKey.ts
 ```

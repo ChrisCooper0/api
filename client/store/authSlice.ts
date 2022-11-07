@@ -21,16 +21,6 @@ export const authSlice = createSlice({
     setAuthState(state, action) {
       state.authState = action.payload;
     },
-
-    // Special reducer for hydrating the state. Special case for next-redux-wrapper
-    // extraReducers: {
-    //   [HYDRATE]: (state: any, action: { payload: { auth: any } }) => {
-    //     return {
-    //       ...state,
-    //       ...action.payload.auth,
-    //     };
-    //   },
-    // },
   },
 });
 
