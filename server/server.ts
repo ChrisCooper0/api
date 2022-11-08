@@ -1,6 +1,5 @@
 import express from "express";
 import helmet from "helmet";
-import { createConnection } from "mysql2";
 import cors from "cors";
 import bcrypt from "bcryptjs";
 import validateKey from "./middleware/validateKey";
@@ -22,6 +21,11 @@ app.use(helmet());
 // GET
 app.get("/api", validateKey, (_req, res) => {
   return res.status(200).send({ data: "Success" });
+});
+
+// GET user
+app.get("/user", validateKey, (_req, res) => {
+  return res.status(200).send({ data: "User" });
 });
 
 // POST: reset account api key

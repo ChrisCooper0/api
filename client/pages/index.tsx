@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
+import Button from "../components/Button";
 import { setTimeout } from "timers";
 
 const Home: NextPage = () => {
@@ -14,37 +15,55 @@ const Home: NextPage = () => {
   const passwordRef: any = useRef("");
 
   const [apiKey, setApiKey] = useState();
-  const [signUpMssg, setSignUpMssg] = useState();
+  const [responseMssg, setResponseMssg] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const handleSignUp = async () => {
-    const res = await fetch("http://localhost:8080/api/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: emailRef.current.value,
-        password: passwordRef.current.value,
-      }),
-    });
+  const [showApi, setShowApi] = useState(false);
 
-    const { apiKey, data } = await res.json();
+  const toggleVisibility = () => {
+    setShowApi(!showApi);
+  };
 
-    dispatch(setAuthState(true));
-    setSignUpMssg(data);
-    setApiKey(apiKey);
+  const resetLoginForm = () => {
     emailRef.current.value = "";
     passwordRef.current.value = "";
+    setResponseMssg("");
+  };
+
+  const handleSignUp = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+        }),
+      });
+
+      const { apiKey, data } = await res.json();
+
+      dispatch(setAuthState(true));
+      setResponseMssg(data);
+      setApiKey(apiKey);
+      resetLoginForm();
+    } catch (e) {
+      setResponseMssg("Error: Please try again");
+    }
   };
 
   const handleLogInOut = () => {
+    setResponseMssg("");
     if (authState) {
       // Logout
       dispatch(setAuthState(false));
+      resetLoginForm();
     } else {
       // Login
       dispatch(setAuthState(true));
+      resetLoginForm();
       // TODO: Create login route
     }
   };
@@ -60,62 +79,75 @@ const Home: NextPage = () => {
   };
 
   const resetAPIKey = async () => {
-    const res = await fetch("http://localhost:8080/api/resetApiKey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "test",
-      },
-      body: JSON.stringify({
-        email: emailRef.current.value,
-      }),
-    });
+    try {
+      const res = await fetch("http://localhost:8080/api/resetApiKey", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": "test",
+        },
+        body: JSON.stringify({
+          email: emailRef.current.value,
+        }),
+      });
+      const { apiKey } = await res.json();
 
-    const { apiKey } = await res.json();
-
-    setApiKey(apiKey);
-  };
-
-  const [showApi, setShowApi] = useState(false);
-  const toggleVisibility = () => {
-    setShowApi(!showApi);
+      setApiKey(apiKey);
+    } catch (e) {
+      setResponseMssg("Failed to reset API Key");
+    }
   };
 
   return (
     <Wrapper>
       <h2>You are logged {authState ? "in" : "out"}</h2>
-      {signUpMssg && <p>{signUpMssg}</p>}
-      {!apiKey && (
+      {responseMssg && <p>{responseMssg}</p>}
+      {apiKey && (
         <>
           <StyledAPIKey>
-            <input type={showApi ? "text" : "password"} value={apiKey} />
+            <Input type={showApi ? "text" : "password"} value={apiKey} />
             {showApi ? (
               <StyledVisible onClick={toggleVisibility} />
             ) : (
               <StyledInvisible onClick={toggleVisibility} />
             )}
           </StyledAPIKey>
-          <button onClick={handleApiKeyCopy}>
-            {copySuccess ? "Copied!" : "Copy"}
-          </button>
+          <Button
+            onClick={handleApiKeyCopy}
+            text={copySuccess ? "Copied!" : "Copy"}
+          ></Button>
         </>
       )}
-
       <Form>
         <input type="email" ref={emailRef} placeholder={"email"} />
         <input type="password" ref={passwordRef} placeholder={"password"} />
       </Form>
-      <Button onClick={handleSignUp}>Sign Up</Button>
-      <Button onClick={handleLogInOut}>
-        {authState ? "Log Out" : "Log In"}
-      </Button>
-      {authState && <Button onClick={resetAPIKey}>Reset API Key</Button>}
+      <ButtonWrapper>
+        {!authState && <Button onClick={handleSignUp} text="Sign Up" />}
+        <Button
+          onClick={handleLogInOut}
+          text={authState ? "Log Out" : "Log In"}
+        />
+      </ButtonWrapper>
+      {authState && <Button onClick={resetAPIKey} text="Reset Key" />}
     </Wrapper>
   );
 };
 
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
 const StyledAPIKey = styled.div`
   position: relative;
+`;
+
+const Input = styled.input`
+  padding-right: 25px;
 `;
 
 const StyledVisible = styled(FiEye)`
@@ -138,35 +170,20 @@ const StyledInvisible = styled(FiEyeOff)`
   }
 `;
 
-const Wrapper = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 `;
 
 const Form = styled.form`
   display: flex;
-  gap: 0.33rem;
+  gap: 0.75rem;
+  flex-direction: column;
 
   input {
-    padding: 0.2rem 0.5rem;
+    padding: 0.35rem 0.5rem;
     border-radius: 5px;
-    border: 1px solid lightgrey;
-  }
-`;
-
-const Button = styled.button`
-  padding: 0.3rem 0.5rem;
-  border: none;
-  border-radius: 5px;
-  transition: 0.2s ease all;
-
-  &:hover {
-    background-color: whitesmoke;
-    cursor: pointer;
-    transition: 0.3s ease all;
+    border: 0.5px solid lightgrey;
   }
 `;
 

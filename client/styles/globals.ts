@@ -6,5 +6,7 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     padding: 0px;
     font-family: 'Roboto Mono', monospace;
+    background-color: #121212;
+    color: whitesmoke;
   }
 `;
