@@ -5,6 +5,7 @@
 - [Next.js](https://nextjs.org/) - A React framework with hybrid static & server rendering, and route pre-fetching, etc.
 - [Styled-Components](https://styled-components.com/) - A CSS-in-JS styling library for React
 - [Express](https://www.expressjs.com/) - Fast, unopinionated, minimalist web framework for Node.js
+- [MySQL](https://www.mysql.com/) - Open-source relational database management system
 
 ## Project structure
 
