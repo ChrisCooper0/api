@@ -54,6 +54,29 @@ const Home: NextPage = () => {
     }
   };
 
+  const login = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailRef.current.value,
+          password: passwordRef.current.value,
+        }),
+      });
+
+      const { apiKey, data } = await res.json();
+
+      dispatch(setAuthState(true));
+      setApiKey(apiKey);
+      resetLoginForm();
+    } catch (e) {
+      setResponseMssg("Error: Please try again");
+    }
+  };
+
   const handleLogInOut = () => {
     setResponseMssg("");
     if (authState) {
@@ -62,9 +85,7 @@ const Home: NextPage = () => {
       resetLoginForm();
     } else {
       // Login
-      dispatch(setAuthState(true));
-      resetLoginForm();
-      // TODO: Create login route
+      login();
     }
   };
 
@@ -84,6 +105,7 @@ const Home: NextPage = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // TODO - update
           "x-api-key": "test",
         },
         body: JSON.stringify({

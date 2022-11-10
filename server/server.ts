@@ -18,14 +18,15 @@ app.use(express.json());
 app.use(helmet());
 
 // Routes
-// GET
+// GET: api data
 app.get("/api", validateKey, (_req, res) => {
   return res.status(200).send({ data: "Success" });
 });
 
-// GET user
-app.get("/user", validateKey, (_req, res) => {
-  return res.status(200).send({ data: "User" });
+// POST: user
+app.post("/api/user", (_req, res) => {
+  // TODO: validate user against db return apiKey
+  return res.status(200).send({ data: "User Exists", apiKey: "1234" });
 });
 
 // POST: reset account api key
