@@ -67,9 +67,10 @@ const Home: NextPage = () => {
         }),
       });
 
-      const { apiKey, data } = await res.json();
+      const { data, apiKey } = await res.json();
 
       dispatch(setAuthState(true));
+      setResponseMssg(data);
       setApiKey(apiKey);
       resetLoginForm();
     } catch (e) {
@@ -140,10 +141,12 @@ const Home: NextPage = () => {
           ></Button>
         </>
       )}
-      <Form>
-        <input type="email" ref={emailRef} placeholder={"email"} />
-        <input type="password" ref={passwordRef} placeholder={"password"} />
-      </Form>
+      {!authState && (
+        <Form>
+          <input type="email" ref={emailRef} placeholder={"email"} />
+          <input type="password" ref={passwordRef} placeholder={"password"} />
+        </Form>
+      )}
       <ButtonWrapper>
         {!authState && <Button onClick={handleSignUp} text="Sign Up" />}
         <Button

@@ -24,9 +24,38 @@ app.get("/api", validateKey, (_req, res) => {
 });
 
 // POST: user
-app.post("/api/user", (_req, res) => {
+app.post("/api/user", async (req, res) => {
   // TODO: validate user against db return apiKey
-  return res.status(200).send({ data: "User Exists", apiKey: "1234" });
+
+  const { email, password } = req.body;
+
+  if (!email) {
+    res.status(400).send({ data: "Please provide an email address" });
+    return;
+  }
+
+  if (!password) {
+    res.status(400).send({ data: "Please provide a password" });
+    return;
+  }
+
+  db.query(
+    "SELECT email, apiKey FROM user WHERE email= ?;",
+    [email],
+    (err, row) => {
+      const json: any = row;
+      if (err) return res.status(400).json(err);
+
+      if (json.length) {
+        res.status(200).send({
+          data: "User exists",
+          apiKey: json[0].apiKey,
+        });
+      } else {
+        return res.status(400).send({ data: "User does not exist" });
+      }
+    }
+  );
 });
 
 // POST: reset account api key
