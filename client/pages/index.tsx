@@ -1,3 +1,4 @@
+import React from "react";
 import { useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
@@ -128,7 +129,6 @@ const Home: NextPage = () => {
       dispatch(setApiKeyState(apiKey));
       setResponseMssg(data);
     } catch (e) {
-      console.log(e, "error");
       setResponseMssg("Failed to reset API Key");
     }
   };

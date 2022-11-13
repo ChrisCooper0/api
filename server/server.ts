@@ -6,7 +6,6 @@ import validateKey from "./middleware/validateKey";
 import { createNewDBUser } from "./utils/createNewDBUser";
 import { generateApiKey } from "./utils/generateApiKey";
 import { db } from "./dbConnection";
-import { json } from "stream/consumers";
 
 const PORT = 8080;
 
