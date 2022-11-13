@@ -26,8 +26,6 @@ app.get("/api", validateKey, (_req, res) => {
 
 // POST: user
 app.post("/api/user", async (req, res) => {
-  // TODO: validate user against db return apiKey
-
   const { email, password } = req.body;
 
   if (!email) {

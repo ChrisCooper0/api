@@ -6,13 +6,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Button from "../components/Button";
 import { setTimeout } from "timers";
+import { selectApiKeyState, setApiKeyState } from "../store/apiKeySlice";
 
 const Home: NextPage = () => {
   const authState = useSelector(selectAuthState);
+  const apiKeyState = useSelector(selectApiKeyState);
   const dispatch = useDispatch();
 
   const emailRef: any = useRef("");
   const passwordRef: any = useRef("");
+
+  const [email, setEmail] = useState<string>("");
 
   const [apiKey, setApiKey] = useState("");
   const [responseMssg, setResponseMssg] = useState("");
@@ -47,6 +51,7 @@ const Home: NextPage = () => {
       dispatch(setAuthState(true));
       resetLoginForm();
       setResponseMssg(data);
+      dispatch(setApiKeyState(apiKey));
       setApiKey(apiKey);
     } catch (e) {
       setResponseMssg("Error: Please try again");
@@ -70,6 +75,7 @@ const Home: NextPage = () => {
 
       if (res.status === 200) {
         dispatch(setAuthState(true));
+        dispatch(setApiKeyState(apiKey));
         setApiKey(apiKey);
       }
       resetLoginForm();
@@ -84,9 +90,11 @@ const Home: NextPage = () => {
 
     if (!authState) {
       login();
+      setEmail(emailRef.current.value);
     } else {
       resetLoginForm();
       setApiKey("");
+      dispatch(setApiKeyState(""));
       dispatch(setAuthState(false));
     }
   };
@@ -101,30 +109,31 @@ const Home: NextPage = () => {
     }
   };
 
-  const resetAPIKey = async () => {
+  const resetAPIKey = async (email: string) => {
     try {
       const res = await fetch("http://localhost:8080/api/resetApiKey", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // TODO - update
-          "x-api-key": "test",
+          "x-api-key": apiKeyState,
         },
         body: JSON.stringify({
-          email: emailRef.current.value,
+          email,
         }),
       });
       const { apiKey } = await res.json();
 
       setApiKey(apiKey);
+      dispatch(setApiKeyState(apiKey));
     } catch (e) {
+      console.log(e, "error");
       setResponseMssg("Failed to reset API Key");
     }
   };
 
   return (
     <Wrapper>
-      <h2>You are logged {authState ? "in" : "out"}</h2>
+      <h3>You are logged {authState ? "in" : "out"}</h3>
       {responseMssg && <p>{responseMssg}</p>}
       {apiKey && (
         <>
@@ -139,7 +148,7 @@ const Home: NextPage = () => {
           <Button
             onClick={handleApiKeyCopy}
             text={copySuccess ? "Copied!" : "Copy"}
-          ></Button>
+          />
         </>
       )}
       {!authState && (
@@ -155,7 +164,9 @@ const Home: NextPage = () => {
           text={authState ? "Log Out" : "Log In"}
         />
       </ButtonWrapper>
-      {authState && <Button onClick={resetAPIKey} text="Reset Key" />}
+      {authState && (
+        <Button onClick={() => resetAPIKey(email)} text="Reset Key" />
+      )}
     </Wrapper>
   );
 };
@@ -173,7 +184,9 @@ const StyledAPIKey = styled.div`
 `;
 
 const Input = styled.input`
-  padding-right: 25px;
+  padding: 2px 30px 2px 2px;
+  border: 1px solid grey;
+  border-radius: 5px;
 `;
 
 const StyledVisible = styled(FiEye)`
