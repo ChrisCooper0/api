@@ -5,7 +5,6 @@ import { selectAuthState, setAuthState } from "../store/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Button from "../components/Button";
-import { setTimeout } from "timers";
 import { selectApiKeyState, setApiKeyState } from "../store/apiKeySlice";
 
 const Home: NextPage = () => {
@@ -48,11 +47,13 @@ const Home: NextPage = () => {
 
       const { apiKey, data } = await res.json();
 
-      dispatch(setAuthState(true));
+      if (res.status === 200) {
+        dispatch(setAuthState(true));
+        dispatch(setApiKeyState(apiKey));
+        setApiKey(apiKey);
+      }
       resetLoginForm();
       setResponseMssg(data);
-      dispatch(setApiKeyState(apiKey));
-      setApiKey(apiKey);
     } catch (e) {
       setResponseMssg("Error: Please try again");
     }
@@ -121,10 +122,11 @@ const Home: NextPage = () => {
           email,
         }),
       });
-      const { apiKey } = await res.json();
+      const { apiKey, data } = await res.json();
 
       setApiKey(apiKey);
       dispatch(setApiKeyState(apiKey));
+      setResponseMssg(data);
     } catch (e) {
       console.log(e, "error");
       setResponseMssg("Failed to reset API Key");
@@ -133,8 +135,20 @@ const Home: NextPage = () => {
 
   return (
     <Wrapper>
-      <h3>You are logged {authState ? "in" : "out"}</h3>
       {responseMssg && <p>{responseMssg}</p>}
+      {!authState && (
+        <Form>
+          <input type="email" ref={emailRef} placeholder={"email"} />
+          <input type="password" ref={passwordRef} placeholder={"password"} />
+        </Form>
+      )}
+      <ButtonWrapper>
+        {!authState && <Button onClick={handleSignUp} text="Sign Up" />}
+        <Button
+          onClick={handleLogInOut}
+          text={authState ? "Log Out" : "Log In"}
+        />
+      </ButtonWrapper>
       {apiKey && (
         <>
           <StyledAPIKey>
@@ -151,19 +165,6 @@ const Home: NextPage = () => {
           />
         </>
       )}
-      {!authState && (
-        <Form>
-          <input type="email" ref={emailRef} placeholder={"email"} />
-          <input type="password" ref={passwordRef} placeholder={"password"} />
-        </Form>
-      )}
-      <ButtonWrapper>
-        {!authState && <Button onClick={handleSignUp} text="Sign Up" />}
-        <Button
-          onClick={handleLogInOut}
-          text={authState ? "Log Out" : "Log In"}
-        />
-      </ButtonWrapper>
       {authState && (
         <Button onClick={() => resetAPIKey(email)} text="Reset Key" />
       )}
@@ -185,7 +186,7 @@ const StyledAPIKey = styled.div`
 
 const Input = styled.input`
   padding: 2px 30px 2px 2px;
-  border: 1px solid grey;
+  border: 0.5px solid lightgrey;
   border-radius: 5px;
 `;
 

@@ -15,12 +15,13 @@ const StyledButton = styled.button`
   border: none;
   border-radius: 5px;
   transition: 0.2s ease all;
-  background-color: whitesmoke;
-  color: #121212;
+  color: #d3d3d3;
+  background: #1cb5e0;
+
   &:hover {
-    background-color: lightgrey;
     cursor: pointer;
     transition: 0.3s ease all;
+    background: #2ba9cd;
   }
 `;
 

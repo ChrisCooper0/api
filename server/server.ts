@@ -44,7 +44,7 @@ app.post("/api/user", async (req, res) => {
     if (json.length) {
       const validPassword = bcrypt.compareSync(password, json[0].password);
       if (!validPassword) {
-        return res.status(400).send({ data: "Passwords do not match" });
+        return res.status(400).send({ data: "Incorrect password" });
       } else {
         db.query(
           "SELECT email, apiKey FROM user WHERE email= ?;",
@@ -94,7 +94,9 @@ app.post("/api/resetApiKey", (req, res) => {
       if (err) return res.status(400).json(err);
 
       if (!row) return res.status(400).send({ data: "No such apiKey exists" });
-      return res.status(200).send({ apiKey: newApiKey });
+      return res
+        .status(200)
+        .send({ data: "New API key generated", apiKey: newApiKey });
     }
   );
 });
