@@ -6,6 +6,7 @@ import validateKey from "./middleware/validateKey";
 import { createNewDBUser } from "./utils/createNewDBUser";
 import { generateApiKey } from "./utils/generateApiKey";
 import { db } from "./dbConnection";
+import { json } from "stream/consumers";
 
 const PORT = 8080;
 
@@ -39,23 +40,35 @@ app.post("/api/user", async (req, res) => {
     return;
   }
 
-  db.query(
-    "SELECT email, apiKey FROM user WHERE email= ?;",
-    [email],
-    (err, row) => {
-      const json: any = row;
-      if (err) return res.status(400).json(err);
-
-      if (json.length) {
-        res.status(200).send({
-          data: "User exists",
-          apiKey: json[0].apiKey,
-        });
+  db.query("SELECT password FROM user WHERE email= ?;", [email], (err, row) => {
+    const json: any = row;
+    if (err) return res.status(400).json(err);
+    if (json.length) {
+      const validPassword = bcrypt.compareSync(password, json[0].password);
+      if (!validPassword) {
+        return res.status(400).send({ data: "Passwords do not match" });
       } else {
-        return res.status(400).send({ data: "User does not exist" });
+        db.query(
+          "SELECT email, apiKey FROM user WHERE email= ?;",
+          [email],
+          (err, row) => {
+            const json: any = row;
+            if (err) return res.status(400).json(err);
+
+            if (json.length) {
+              return res.status(200).send({
+                apiKey: json[0].apiKey,
+              });
+            } else {
+              return res.status(400).send({ data: "User does not exist" });
+            }
+          }
+        );
       }
+    } else {
+      return res.status(400).send({ data: "User does not exist" });
     }
-  );
+  });
 });
 
 // POST: reset account api key

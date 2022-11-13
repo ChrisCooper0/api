@@ -14,7 +14,7 @@ const Home: NextPage = () => {
   const emailRef: any = useRef("");
   const passwordRef: any = useRef("");
 
-  const [apiKey, setApiKey] = useState();
+  const [apiKey, setApiKey] = useState("");
   const [responseMssg, setResponseMssg] = useState("");
   const [copySuccess, setCopySuccess] = useState(false);
 
@@ -25,9 +25,8 @@ const Home: NextPage = () => {
   };
 
   const resetLoginForm = () => {
-    emailRef.current.value = "";
-    passwordRef.current.value = "";
     setResponseMssg("");
+    setShowApi(false);
   };
 
   const handleSignUp = async () => {
@@ -46,9 +45,9 @@ const Home: NextPage = () => {
       const { apiKey, data } = await res.json();
 
       dispatch(setAuthState(true));
+      resetLoginForm();
       setResponseMssg(data);
       setApiKey(apiKey);
-      resetLoginForm();
     } catch (e) {
       setResponseMssg("Error: Please try again");
     }
@@ -69,10 +68,12 @@ const Home: NextPage = () => {
 
       const { data, apiKey } = await res.json();
 
-      dispatch(setAuthState(true));
-      setResponseMssg(data);
-      setApiKey(apiKey);
+      if (res.status === 200) {
+        dispatch(setAuthState(true));
+        setApiKey(apiKey);
+      }
       resetLoginForm();
+      setResponseMssg(data);
     } catch (e) {
       setResponseMssg("Error: Please try again");
     }
@@ -80,13 +81,13 @@ const Home: NextPage = () => {
 
   const handleLogInOut = () => {
     setResponseMssg("");
-    if (authState) {
-      // Logout
-      dispatch(setAuthState(false));
-      resetLoginForm();
-    } else {
-      // Login
+
+    if (!authState) {
       login();
+    } else {
+      resetLoginForm();
+      setApiKey("");
+      dispatch(setAuthState(false));
     }
   };
 
