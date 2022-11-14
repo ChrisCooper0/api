@@ -149,25 +149,27 @@ const Home: NextPage = () => {
           text={authState ? "Log Out" : "Log In"}
         />
       </ButtonWrapper>
-      {apiKey && (
-        <>
-          <StyledAPIKey>
-            <Input type={showApi ? "text" : "password"} value={apiKey} />
-            {showApi ? (
-              <StyledVisible onClick={toggleVisibility} />
-            ) : (
-              <StyledInvisible onClick={toggleVisibility} />
-            )}
-          </StyledAPIKey>
-          <Button
-            onClick={handleApiKeyCopy}
-            text={copySuccess ? "Copied!" : "Copy"}
-          />
-        </>
-      )}
-      {authState && (
-        <Button onClick={() => resetAPIKey(email)} text="Reset Key" />
-      )}
+      <ButtonWrapper>
+        {apiKey && (
+          <>
+            <StyledAPIKey>
+              <Input type={showApi ? "text" : "password"} value={apiKey} />
+              {showApi ? (
+                <StyledVisible onClick={toggleVisibility} />
+              ) : (
+                <StyledInvisible onClick={toggleVisibility} />
+              )}
+            </StyledAPIKey>
+            <Button
+              onClick={handleApiKeyCopy}
+              text={copySuccess ? "Copied!" : "Copy"}
+            />
+          </>
+        )}
+        {authState && (
+          <Button onClick={() => resetAPIKey(email)} text="Reset Key" />
+        )}
+      </ButtonWrapper>
     </Wrapper>
   );
 };
@@ -212,7 +214,13 @@ const StyledInvisible = styled(FiEyeOff)`
 
 const ButtonWrapper = styled.div`
   display: flex;
+  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
+
+  @media screen and (min-width: 425px) {
+    flex-direction: row;
+  }
 `;
 
 const Form = styled.form`
