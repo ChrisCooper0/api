@@ -129,6 +129,23 @@ app.post("/api/register", async (req, res) => {
   });
 });
 
+// DELETE user
+app.delete("/api/deleteUser", (req, res) => {
+  const { email } = req.body;
+
+  db.query("DELETE FROM user WHERE email= ?;", [email], (err, row) => {
+    const json: any = row;
+    if (err) return res.status(400).json(err);
+    if (json.length) {
+      res.status(400).send({
+        data: "Failed to delete account",
+      });
+    } else {
+      return res.status(200).send({ data: "Account succesfully deleted" });
+    }
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
 });

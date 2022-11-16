@@ -1,5 +1,4 @@
-import React from "react";
-import { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
@@ -111,7 +110,7 @@ const Home: NextPage = () => {
     }
   };
 
-  const resetAPIKey = async (email: string) => {
+  const resetAPIKey = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/resetApiKey", {
         method: "POST",
@@ -130,6 +129,34 @@ const Home: NextPage = () => {
       setResponseMssg(data);
     } catch (e) {
       setResponseMssg("Failed to reset API Key");
+    }
+  };
+
+  const deleteUser = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/deleteUser", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKeyState,
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      });
+
+      const { data } = await res.json();
+
+      setResponseMssg(data);
+
+      if (res.status === 200) {
+        setResponseMssg(data);
+        setApiKey("");
+        dispatch(setApiKeyState(""));
+        dispatch(setAuthState(false));
+      }
+    } catch (e) {
+      setResponseMssg("Failed to delete account");
     }
   };
 
@@ -167,7 +194,10 @@ const Home: NextPage = () => {
           </>
         )}
         {authState && (
-          <Button onClick={() => resetAPIKey(email)} text="Reset Key" />
+          <>
+            <Button onClick={() => resetAPIKey()} text="Reset Key" />
+            <Button onClick={() => deleteUser()} text="Delete Account" />
+          </>
         )}
       </ButtonWrapper>
     </Wrapper>
