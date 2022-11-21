@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import type { NextPage } from "next";
 import styled from "styled-components";
 import { selectAuthState, setAuthState } from "../store/authSlice";
@@ -6,8 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { FiEye, FiEyeOff } from "react-icons/fi";
 import Button from "../components/Button";
 import { selectApiKeyState, setApiKeyState } from "../store/apiKeySlice";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
+  const router = useRouter();
   const authState = useSelector(selectAuthState);
   const apiKeyState = useSelector(selectApiKeyState);
   const dispatch = useDispatch();
@@ -160,6 +162,10 @@ const Home: NextPage = () => {
     }
   };
 
+  const handleResetPassword = () => {
+    router.push("/resetpassword");
+  };
+
   return (
     <Wrapper>
       {responseMssg && <p>{responseMssg}</p>}
@@ -197,6 +203,10 @@ const Home: NextPage = () => {
           <>
             <Button onClick={() => resetAPIKey()} text="Reset Key" />
             <Button onClick={() => deleteUser()} text="Delete Account" />
+            <Button
+              onClick={handleResetPassword}
+              text="Reset Password"
+            ></Button>
           </>
         )}
       </ButtonWrapper>
