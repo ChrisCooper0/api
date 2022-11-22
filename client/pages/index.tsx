@@ -259,7 +259,7 @@ const ButtonWrapper = styled.div`
   flex-direction: column;
   gap: 0.5rem;
 
-  @media screen and (min-width: 425px) {
+  @media screen and (min-width: 678px) {
     flex-direction: row;
   }
 `;

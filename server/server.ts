@@ -148,7 +148,7 @@ app.delete("/api/deleteUser", (req, res) => {
 
 // PUT: update user password
 app.put("/api/resetpassword", async (req, res) => {
-  const { email, password: newPassword } = req.body;
+  const { email, password } = req.body;
 
   if (!email) {
     // Generic error as email fetched from state
@@ -156,23 +156,42 @@ app.put("/api/resetpassword", async (req, res) => {
     return;
   }
 
-  if (!newPassword) {
+  if (!password) {
     res.status(400).send({ data: "Please provide a new password" });
     return;
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  console.log(password, "newPW");
 
-  db.query(
-    "UPDATE user SET password= ? WHERE email= ?;",
-    [hashedPassword, email],
-    (err: any, _data: any) => {
-      if (err) return res.status(400).json(err);
-      return res.status(200).send({
-        data: `Successfully updated password`,
-      });
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  db.query("SELECT password FROM user WHERE email= ?;", [email], (err, row) => {
+    const json: any = row;
+    if (err) return res.status(400).json(err);
+    if (json.length) {
+      const match = bcrypt.compareSync(password, json[0].password);
+
+      if (match) {
+        return res.status(400).send({
+          data: "Your new password cannot be the same as your existing password",
+        });
+      } else {
+        db.query(
+          "UPDATE user SET password= ? WHERE email= ?;",
+          [hashedPassword, email],
+          (err: any, _data: any) => {
+            if (err) return res.status(400).json(err);
+            return res.status(200).send({
+              data: `Successfully updated password`,
+            });
+          }
+        );
+      }
+    } else {
+      // Generic error as email fetched from state
+      return res.status(400).send({ data: "Error: Please try again" });
     }
-  );
+  });
 });
 
 app.listen(PORT, () => {
