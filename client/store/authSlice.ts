@@ -4,12 +4,12 @@ import { HYDRATE } from "next-redux-wrapper";
 
 // Type for our state
 export interface AuthState {
-  authState: boolean;
+  authState: string;
 }
 
 // Initial state
 const initialState: AuthState = {
-  authState: false,
+  authState: "",
 };
 
 // Actual Slice

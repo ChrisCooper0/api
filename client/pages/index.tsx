@@ -50,7 +50,8 @@ const Home: NextPage = () => {
       const { apiKey, data } = await res.json();
 
       if (res.status === 200) {
-        dispatch(setAuthState(true));
+        dispatch(setAuthState(emailRef.current.value));
+
         dispatch(setApiKeyState(apiKey));
         setApiKey(apiKey);
       }
@@ -77,7 +78,7 @@ const Home: NextPage = () => {
       const { data, apiKey } = await res.json();
 
       if (res.status === 200) {
-        dispatch(setAuthState(true));
+        dispatch(setAuthState(emailRef.current.value));
         dispatch(setApiKeyState(apiKey));
         setApiKey(apiKey);
       }
@@ -98,7 +99,7 @@ const Home: NextPage = () => {
       resetLoginForm();
       setApiKey("");
       dispatch(setApiKeyState(""));
-      dispatch(setAuthState(false));
+      dispatch(setAuthState(""));
     }
   };
 
@@ -155,7 +156,7 @@ const Home: NextPage = () => {
         setResponseMssg(data);
         setApiKey("");
         dispatch(setApiKeyState(""));
-        dispatch(setAuthState(false));
+        dispatch(setAuthState(""));
       }
     } catch (e) {
       setResponseMssg("Failed to delete account");
