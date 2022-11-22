@@ -146,6 +146,35 @@ app.delete("/api/deleteUser", (req, res) => {
   });
 });
 
+// PUT: update user password
+app.put("/api/resetpassword", async (req, res) => {
+  const { email, password: newPassword } = req.body;
+
+  if (!email) {
+    // Generic error as email fetched from state
+    res.status(400).send({ data: "Error: Please try again" });
+    return;
+  }
+
+  if (!newPassword) {
+    res.status(400).send({ data: "Please provide a new password" });
+    return;
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  db.query(
+    "UPDATE user SET password= ? WHERE email= ?;",
+    [hashedPassword, email],
+    (err: any, _data: any) => {
+      if (err) return res.status(400).json(err);
+      return res.status(200).send({
+        data: `Successfully updated password`,
+      });
+    }
+  );
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server started on port ${PORT}`);
 });
