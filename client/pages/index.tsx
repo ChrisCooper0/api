@@ -202,12 +202,9 @@ const Home: NextPage = () => {
         )}
         {authState && (
           <>
-            <Button onClick={() => resetAPIKey()} text="Reset Key" />
-            <Button onClick={() => deleteUser()} text="Delete Account" />
-            <Button
-              onClick={handleResetPassword}
-              text="Reset Password"
-            ></Button>
+            <Button onClick={resetAPIKey} text="Reset Key" />
+            <Button onClick={deleteUser} text="Delete Account" />
+            <Button onClick={handleResetPassword} text="Reset Password" />
           </>
         )}
       </ButtonWrapper>
