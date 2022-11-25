@@ -19,11 +19,11 @@ const Home: NextPage = () => {
 
   const [email, setEmail] = useState<string>("");
 
-  const [apiKey, setApiKey] = useState("");
-  const [responseMssg, setResponseMssg] = useState("");
-  const [copySuccess, setCopySuccess] = useState(false);
+  const [apiKey, setApiKey] = useState<string>("");
+  const [responseMssg, setResponseMssg] = useState<string>("");
+  const [copySuccess, setCopySuccess] = useState<boolean>(false);
 
-  const [showApi, setShowApi] = useState(false);
+  const [showApi, setShowApi] = useState<boolean>(false);
 
   const toggleVisibility = () => {
     setShowApi(!showApi);
