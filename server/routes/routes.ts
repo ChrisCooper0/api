@@ -150,8 +150,6 @@ router.put("/resetpassword", async (req, res) => {
     return;
   }
 
-  console.log(password, "newPW");
-
   const hashedPassword = await bcrypt.hash(password, 10);
 
   db.query("SELECT password FROM user WHERE email= ?;", [email], (err, row) => {
