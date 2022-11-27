@@ -207,6 +207,7 @@ const Home: NextPage = () => {
             <Button onClick={handleResetPassword} text="Reset Password" />
           </>
         )}
+     
       </ButtonWrapper>
     </Wrapper>
   );

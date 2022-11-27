@@ -44,6 +44,7 @@ const resetpassword = () => {
         resetForm();
       }
       setResponseMssg(data);
+      router.push("/");
     } catch (e) {
       setResponseMssg("Error: Please try again");
     }
