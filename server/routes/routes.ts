@@ -16,14 +16,10 @@ router.get("/", validateKey, (_req, res) => {
 router.post("/user", async (req, res) => {
   const { email, password } = req.body;
 
-  if (!email) {
-    res.status(400).send({ data: "Please provide an email address" });
-    return;
-  }
-
-  if (!password) {
-    res.status(400).send({ data: "Please provide a password" });
-    return;
+  if (!email || !password) {
+    return res.status(400).send({
+      data: `Please provide ${!email ? `an email address` : `a password`}`,
+    });
   }
 
   db.query("SELECT password FROM user WHERE email= ?;", [email], (err, row) => {
@@ -93,14 +89,10 @@ router.post("/resetApiKey", (req, res) => {
 router.post("/register", async (req, res) => {
   const { email: newEmail, password } = req.body;
 
-  if (!newEmail) {
-    res.status(400).send({ data: "Please provide an email address" });
-    return;
-  }
-
-  if (!password) {
-    res.status(400).send({ data: "Please provide a password" });
-    return;
+  if (!newEmail || !password) {
+    return res.status(400).send({
+      data: `Please provide ${!newEmail ? `an email address` : `a password`}`,
+    });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -141,13 +133,11 @@ router.put("/resetpassword", async (req, res) => {
 
   if (!email) {
     // Generic error as email fetched from state
-    res.status(400).send({ data: "Error: Please try again" });
-    return;
+    return res.status(400).send({ data: "Error: Please try again" });
   }
 
   if (!password) {
-    res.status(400).send({ data: "Please provide a new password" });
-    return;
+    return res.status(400).send({ data: "Please provide a new password" });
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
