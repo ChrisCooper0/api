@@ -9,12 +9,9 @@ const PORT = 8080;
 const app = express();
 
 app.use(cors());
+app.use(helmet());
 app.use(express.json());
 
-// Helmet to enhance security
-app.use(helmet());
-
-// Routes
 app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
