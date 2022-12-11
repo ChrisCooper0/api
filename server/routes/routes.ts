@@ -22,35 +22,39 @@ router.post("/user", async (req, res) => {
     });
   }
 
-  db.query("SELECT password FROM user WHERE email= ?;", [email], (err, row) => {
-    const json: any = row;
-    if (err) return res.status(400).json(err);
-    if (json.length) {
-      const validPassword = bcrypt.compareSync(password, json[0].password);
-      if (!validPassword) {
-        return res.status(400).send({ data: "Incorrect password" });
-      } else {
-        db.query(
-          "SELECT email, apiKey FROM user WHERE email= ?;",
-          [email],
-          (err, row) => {
-            const json: any = row;
-            if (err) return res.status(400).json(err);
+  db.query(
+    "SELECT password FROM user WHERE email= ? LIMIT 1;",
+    [email],
+    (err, row) => {
+      const json: any = row;
+      if (err) return res.status(400).json(err);
+      if (json.length) {
+        const validPassword = bcrypt.compareSync(password, json[0].password);
+        if (!validPassword) {
+          return res.status(400).send({ data: "Incorrect password" });
+        } else {
+          db.query(
+            "SELECT email, apiKey FROM user WHERE email= ? LIMIT 1;",
+            [email],
+            (err, row) => {
+              const json: any = row;
+              if (err) return res.status(400).json(err);
 
-            if (json.length) {
-              return res.status(200).send({
-                apiKey: json[0].apiKey,
-              });
-            } else {
-              return res.status(400).send({ data: "User does not exist" });
+              if (json.length) {
+                return res.status(200).send({
+                  apiKey: json[0].apiKey,
+                });
+              } else {
+                return res.status(400).send({ data: "User does not exist" });
+              }
             }
-          }
-        );
+          );
+        }
+      } else {
+        return res.status(400).send({ data: "User does not exist" });
       }
-    } else {
-      return res.status(400).send({ data: "User does not exist" });
     }
-  });
+  );
 });
 
 // POST: reset account api key
