@@ -51,7 +51,6 @@ const Home: NextPage = () => {
 
       if (res.status === 200) {
         dispatch(setAuthState(emailRef.current.value));
-
         dispatch(setApiKeyState(apiKey));
         setApiKey(apiKey);
       }

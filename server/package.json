@@ -2,11 +2,11 @@
   "name": "api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "server.ts",
   "scripts": {
     "test": "jest --watchAll",
     "dev": "nodemon server.ts",
-    "start": "node server.ts"
+    "start": "tsc && node ./dist/server.js"
   },
   "keywords": [],
   "author": "",
