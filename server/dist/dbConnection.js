@@ -7,5 +7,4 @@ exports.db = (0, mysql2_1.createConnection)({
     user: "root",
     password: "password",
     database: "api",
-    port: 3306,
 });
