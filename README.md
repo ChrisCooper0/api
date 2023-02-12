@@ -31,6 +31,8 @@
     │
     ├── middleware
     │   └── validateKey.ts
+    ├── routes
+    │   └── routes.ts
     │
     └── utils
         ├── createNewDBUser.ts
