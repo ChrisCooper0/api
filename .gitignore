@@ -1,6 +1,5 @@
 notes.txt
 *.env
 dbConnection.ts
-dbConnection.js
-
+*server/dist/dbConnection.js
 
