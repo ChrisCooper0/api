@@ -7,7 +7,7 @@ import { db } from "../dbConnection";
 
 const router = express.Router();
 
-// GET: dad
+// GET: data
 router.get("/", validateKey, (_req, res) => {
   return res.status(200).send({ data: "Success" });
 });
